@@ -17,7 +17,7 @@ public class FileOutputStrategy implements OutputStrategy {
 // Google Style: Variable names should be lowerCamelCase (changed BaseDirectory to baseDirectory)
     private String baseDirectory;
     // Google Style: No underscores in variable names (changed file_map to fileMap)
-  // Also changed to private to follow best practices for encapsulation
+    // Also changed to private to follow best practices for encapsulation
     private final ConcurrentHashMap<String, String> filemap = new ConcurrentHashMap<>();
 
     /**
