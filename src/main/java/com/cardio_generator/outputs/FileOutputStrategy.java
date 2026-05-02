@@ -8,14 +8,15 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FileOutputStrategy implements OutputStrategy {
-
-    private String BaseDirectory;
-
-    public final ConcurrentHashMap<String, String> file_map = new ConcurrentHashMap<>();
+// Google Style: Variable names should be lowerCamelCase (changed BaseDirectory to baseDirectory)
+    private String baseDirectory;
+    //// Google Style: No underscores in variable names (changed file_map to fileMap)
+  // Also changed to private to follow best practices for encapsulation
+    private final ConcurrentHashMap<String, String> filemap = new ConcurrentHashMap<>();
 
     public FileOutputStrategy(String baseDirectory) {
-
-        this.BaseDirectory = baseDirectory;
+        //Correction base directory
+        this.baseDirectory = baseDirectory;
     }
 
     @Override
@@ -28,7 +29,9 @@ public class FileOutputStrategy implements OutputStrategy {
             return;
         }
         // Set the FilePath variable
-        String FilePath = file_map.computeIfAbsent(label, k -> Paths.get(BaseDirectory, label + ".txt").toString());
+        // Google Style: Variable names must start with lowercase (changed FilePath to filePath)
+        // Also corrected the call to the renamed fileMap
+        String filePath = filemap.computeIfAbsent(label, k -> Paths.get(baseDirectory, label + ".txt").toString());
 
         // Write the data to the file
         try (PrintWriter out = new PrintWriter(
