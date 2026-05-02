@@ -8,6 +8,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * This class handles saving patient data into physical files. 
+ * It creates a directory if it doesn't exist and organizes data into 
+ * separate text files based on their labels (like ECG or BloodPressure).
+ */
 public class FileOutputStrategy implements OutputStrategy {
 // Google Style: Variable names should be lowerCamelCase (changed BaseDirectory to baseDirectory)
     private String baseDirectory;
@@ -15,11 +20,22 @@ public class FileOutputStrategy implements OutputStrategy {
   // Also changed to private to follow best practices for encapsulation
     private final ConcurrentHashMap<String, String> filemap = new ConcurrentHashMap<>();
 
+    /**
+   * Initializes the strategy with a folder path where data will be stored.
+   * * @param baseDirectory The path to the folder for the output files.
+   */
     public FileOutputStrategy(String baseDirectory) {
         //Correction base directory
         this.baseDirectory = baseDirectory;
     }
 
+    /**
+   * Records the patient data into a text file.
+   * * @param patientId The ID of the patient.
+   * @param timestamp When the data was captured.
+   * @param label     The type of data (e.g., "Alert").
+   * @param data      The actual measurement value.
+   */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         try {
