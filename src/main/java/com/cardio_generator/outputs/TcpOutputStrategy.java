@@ -6,12 +6,24 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 
+/**
+ * This class sends patient data over a network using a TCP socket.
+ * It acts as a server that waits for a client to connect, then streams 
+ * the simulated data to that client in real-time.
+ */
 public class TcpOutputStrategy implements OutputStrategy {
 
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private PrintWriter out;
 
+    /**
+   * Initializes the TCP server on a specific port.
+   * It starts a background thread to wait for a client connection so the 
+   * simulator can keep running without waiting for someone to connect.
+   *
+   * @param port The network port number to listen on (e.g., 8080).
+   */
     public TcpOutputStrategy(int port) {
         try {
             serverSocket = new ServerSocket(port);
@@ -32,6 +44,15 @@ public class TcpOutputStrategy implements OutputStrategy {
         }
     }
 
+    /**
+   * Formats the patient data into a comma-separated string and sends it 
+   * over the network if a client is currently connected.
+   *
+   * @param patientId The ID of the patient.
+   * @param timestamp The time the data was created.
+   * @param label     The type of data (e.g., "ECG").
+   * @param data      The actual value being sent.
+   */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         if (out != null) {
