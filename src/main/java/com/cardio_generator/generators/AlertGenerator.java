@@ -5,30 +5,36 @@ import java.util.Random;
 import com.cardio_generator.outputs.OutputStrategy;
 
 public class AlertGenerator implements PatientDataGenerator {
-
-    public static final Random randomGenerator = new Random();
-    private boolean[] AlertStates; // false = resolved, true = pressed
-
+    /*Google style: name should be UPPER_SNAKE_CASE*/
+    public static final Random RANDOM_GENERATOR = new Random();
+    //Google style : local variable should start with a lowercase letter ( lowerCamelCase )
+    private boolean[] alertStates; // false = resolved, true = pressed
+    //Correction variable 
     public AlertGenerator(int patientCount) {
-        AlertStates = new boolean[patientCount + 1];
+        alertStates = new boolean[patientCount + 1];
     }
 
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
         try {
-            if (AlertStates[patientId]) {
-                if (randomGenerator.nextDouble() < 0.9) { // 90% chance to resolve
-                    AlertStates[patientId] = false;
+          //Correction alertState
+            if (alertStates[patientId]) {
+                if (RANDOM_GENERATOR.nextDouble() < 0.9) { // 90% chance to resolve
+                    //correction alertState
+                    alertStates[patientId] = false;
                     // Output the alert
                     outputStrategy.output(patientId, System.currentTimeMillis(), "Alert", "resolved");
                 }
             } else {
-                double Lambda = 0.1; // Average rate (alerts per period), adjust based on desired frequency
-                double p = -Math.expm1(-Lambda); // Probability of at least one alert in the period
-                boolean alertTriggered = randomGenerator.nextDouble() < p;
+                //Google style : local variable should start with a lowercase letter ( lowerCamelCase )
+                double lambda = 0.1; // Average rate (alerts per period), adjust based on desired frequency
+                //Correction lambda
+                double p = -Math.expm1(-lambda); // Probability of at least one alert in the period
+                boolean alertTriggered = RANDOM_GENERATOR.nextDouble() < p;
 
                 if (alertTriggered) {
-                    AlertStates[patientId] = true;
+                  //Correction alertState
+                    alertStates[patientId] = true;
                     // Output the alert
                     outputStrategy.output(patientId, System.currentTimeMillis(), "Alert", "triggered");
                 }
