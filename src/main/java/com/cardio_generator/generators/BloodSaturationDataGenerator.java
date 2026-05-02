@@ -4,10 +4,21 @@ import java.util.Random;
 
 import com.cardio_generator.outputs.OutputStrategy;
 
+/**
+ * This class simulates the blood oxygen saturation (SpO2) levels of patients.
+ * It starts each patient at a healthy baseline and introduces small, 
+ * random fluctuations over time to mimic real-life physiological changes.
+ */
 public class BloodSaturationDataGenerator implements PatientDataGenerator {
     private static final Random random = new Random();
     private int[] lastSaturationValues;
 
+    /**
+   * Sets up the generator for a specific number of patients.
+   * Each patient is assigned a starting oxygen level between 95% and 100%.
+   *
+   * @param patientCount The total number of patients to simulate.
+   */
     public BloodSaturationDataGenerator(int patientCount) {
         lastSaturationValues = new int[patientCount + 1];
 
@@ -17,6 +28,13 @@ public class BloodSaturationDataGenerator implements PatientDataGenerator {
         }
     }
 
+    /**
+   * Generates a new saturation reading by slightly adjusting the previous value.
+   * The value is capped between 90% and 100% to remain within a realistic range.
+   *
+   * @param patientId      The ID of the patient.
+   * @param outputStrategy The method used to deliver the generated data.
+   */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
         try {
