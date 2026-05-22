@@ -2,6 +2,8 @@ package com.alerts;
 
 import com.data_management.DataStorage;
 import com.data_management.Patient;
+import com.data_management.PatientRecord;
+import java.util.List;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -35,20 +37,20 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
-        int patientId = patient.getPatientId();
+        int patientId = patient.getPatientID();
         long now = System.currentTimeMillis();
         long tenMinutesAgo = now - 10 * 60 * 1000;
 
         List<PatientRecord> systolicRecords = dataStorage.getRecords(patientId, 0, now)
-            .stream().filter(r -> r.getRecordType().equals("SystolicPressure")).toList();
+                .stream().filter(r -> r.getRecordType().equals("SystolicPressure")).toList();
         List<PatientRecord> diastolicRecords = dataStorage.getRecords(patientId, 0, now)
-            .stream().filter(r -> r.getRecordType().equals("DiastolicPressure")).toList();
+                .stream().filter(r -> r.getRecordType().equals("DiastolicPressure")).toList();
         List<PatientRecord> saturationRecords = dataStorage.getRecords(patientId, 0, now)
-            .stream().filter(r -> r.getRecordType().equals("Saturation")).toList();
+                .stream().filter(r -> r.getRecordType().equals("Saturation")).toList();
         List<PatientRecord> ecgRecords = dataStorage.getRecords(patientId, 0, now)
-            .stream().filter(r -> r.getRecordType().equals("ECG")).toList();
+                .stream().filter(r -> r.getRecordType().equals("ECG")).toList();
         List<PatientRecord> alertRecords = dataStorage.getRecords(patientId, 0, now)
-            .stream().filter(r -> r.getRecordType().equals("Alert")).toList();
+                .stream().filter(r -> r.getRecordType().equals("Alert")).toList();
 
         // 1. Blood Pressure Trend Alert
         checkTrend(patient, systolicRecords, "SystolicPressure");
@@ -75,7 +77,7 @@ public class AlertGenerator {
 
         // 4. Blood Saturation - Rapid Drop Alert (5% drop in 10 minutes)
         List<PatientRecord> recentSaturation = dataStorage.getRecords(patientId, tenMinutesAgo, now)
-            .stream().filter(r -> r.getRecordType().equals("Saturation")).toList();
+                .stream().filter(r -> r.getRecordType().equals("Saturation")).toList();
         if (recentSaturation.size() >= 2) {
             double first = recentSaturation.get(0).getMeasurementValue();
             double last = recentSaturation.get(recentSaturation.size() - 1).getMeasurementValue();
@@ -94,7 +96,7 @@ public class AlertGenerator {
         // 6. ECG - Abnormal Peak Detection (sliding window)
         if (ecgRecords.size() > 10) {
             double avg = ecgRecords.stream()
-                .mapToDouble(PatientRecord::getMeasurementValue).average().orElse(0);
+                    .mapToDouble(PatientRecord::getMeasurementValue).average().orElse(0);
             for (PatientRecord r : ecgRecords) {
                 if (r.getMeasurementValue() > avg * 1.5) {
                     triggerAlert(new Alert(String.valueOf(patientId), "AbnormalECGPeak", r.getTimestamp()));
@@ -110,16 +112,20 @@ public class AlertGenerator {
             }
         }
     }
+
     private void checkTrend(Patient patient, List<PatientRecord> records, String type) {
-        if (records.size() < 3) return;
+        if (records.size() < 3)
+            return;
         for (int i = records.size() - 3; i < records.size() - 1; i++) {
-            double diff1 = records.get(i+1).getMeasurementValue() - records.get(i).getMeasurementValue();
-            double diff2 = records.get(i+2).getMeasurementValue() - records.get(i+1).getMeasurementValue();
+            double diff1 = records.get(i + 1).getMeasurementValue() - records.get(i).getMeasurementValue();
+            double diff2 = records.get(i + 2).getMeasurementValue() - records.get(i + 1).getMeasurementValue();
             if (diff1 > 10 && diff2 > 10) {
-                triggerAlert(new Alert(String.valueOf(patient.getPatientId()), type + "IncreasingTrend", records.get(i+2).getTimestamp()));
+                triggerAlert(new Alert(String.valueOf(patient.getPatientID()), type + "IncreasingTrend",
+                        records.get(i + 2).getTimestamp()));
             }
             if (diff1 < -10 && diff2 < -10) {
-                triggerAlert(new Alert(String.valueOf(patient.getPatientId()), type + "DecreasingTrend", records.get(i+2).getTimestamp()));
+                triggerAlert(new Alert(String.valueOf(patient.getPatientID()), type + "DecreasingTrend",
+                        records.get(i + 2).getTimestamp()));
             }
         }
     }
@@ -134,7 +140,7 @@ public class AlertGenerator {
      */
     private void triggerAlert(Alert alert) {
         System.out.println("ALERT: Patient " + alert.getPatientId() +
-            " | Condition: " + alert.getCondition() +
-            " | Time: " + alert.getTimestamp());
+                " | Condition: " + alert.getCondition() +
+                " | Time: " + alert.getTimestamp());
     }
 }
